@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=jpeg-recompress
+Comment=jpeg-recompress
+Exec=AppRun
+Type=Application
+Icon=application-x-executable-symbolic
+Categories=Graphics;
+MimeType=application/x-iso9660-appimage;
+
