@@ -43,6 +43,10 @@ COPY AppRun AppDir/AppRun
 COPY jpeg-archive.desktop AppDir/jpeg-archive.desktop
 
 RUN set -ex \
+    && rm -rf /AppDir/usr/ \
+    && rm -f /AppDir/bin/jpeg-archive \
+    && rm -f /AppDir/bin/jpeg-hash \
+    && rm -f /AppDir/bin/jpeg-compare \
     && find /AppDir \
     && chmod a+x AppDir/AppRun
 
