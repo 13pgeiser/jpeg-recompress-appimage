@@ -24,13 +24,12 @@ RUN set -ex \
     && rm -rf /work/AppDir/usr/ \
     && rm -f /work/AppDir/bin/jpeg-archive \
     && rm -f /work/AppDir/bin/jpeg-hash \
-    && rm -f /work/AppDir/bin/jpeg-compare \
-    && find /work/AppDir \
-    && chmod a+x /work/AppDir/AppRun
+    && rm -f /work/AppDir/bin/jpeg-compare
 RUN set -ex \
     && export LD_LIBRARY_PATH=/work/AppDir/usr/lib/ ; find /work/AppDir/ -type f -executable -exec ldd {} \; | grep "not found" | true \
     && cp /usr/share/icons/Adwaita/scalable/mimetypes/application-x-executable-symbolic.svg /work/AppDir \
-    && ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir
+    && ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir \
+    && chmod +x jpeg-recompress-x86_64.AppImage
 RUN set -ex \
     && cd /work/AppDir \
     && strace ./AppRun || true
