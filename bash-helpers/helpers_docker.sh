@@ -1,17 +1,22 @@
 #!/bin/bash
 docker_configure() { #helpmsg: Basic compatibility for MSYS
-
 	DOCKER_FLAGS=""
-	if [ "$(getent group docker)" ]; then
-		DOCKER_FLAGS="--group-add $(getent group docker | cut -d: -f3) -v /var/run/docker.sock:/var/run/docker.sock"
+	if [ "$OSTYPE" == "msys" ]; then
+		docker() {
+			#MSYS_NO_PATHCONV=1 docker.exe "$@"
+			(
+				export MSYS_NO_PATHCONV=1
+				"docker.exe" "$@"
+			)
+		}
+		export -f docker
+	else
+		if [ "$(getent group docker)" ]; then
+			DOCKER_FLAGS="--group-add $(getent group docker | cut -d: -f3) -v /var/run/docker.sock:/var/run/docker.sock"
+		fi
 	fi
 	DOCKER_RUN_CMD="docker run --rm  $DOCKER_FLAGS -u $(id -u):$(id -g)"
-	if [ "$OSTYPE" == "msys" ]; then
-		DOCKER_RUN_CMD="MSYS_NO_PATHCONV=1 $DOCKER_RUN_CMD"
-	fi
 	export DOCKER_RUN_CMD
-	DOCKER_BUILDKIT=1
-	export DOCKER_BUILDKIT
 }
 
 docker_setup() { #helpmsg: Setup variables for docker: image, volume, ...
@@ -23,8 +28,6 @@ docker_setup() { #helpmsg: Setup variables for docker: image, volume, ...
 	export VOLUME_NAME
 	DOCKERFILE="Dockerfile"
 	export DOCKERFILE
-	DOCKER_BUILDKIT=1
-	export DOCKER_BUILDKIT
 	DOCKER_RUN_BASE="$DOCKER_RUN_CMD -v $VOLUME_NAME:/home/$USER -v $(pwd):/mnt --name ${IMAGE_NAME}_container"
 	export DOCKER_RUN_BASE
 	DOCKER_RUN_I="$DOCKER_RUN_BASE -i $IMAGE_NAME"
