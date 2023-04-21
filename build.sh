@@ -1,12 +1,14 @@
 #!/bin/bash
 set -ex
-source bash-helpers/helpers.sh
+source bash-scripts/helpers.sh
+run_shfmt_and_shellcheck ./*.sh
 docker_setup "jpeg-recompress-appimage"
 dockerfile_create
 dockerfile_appimage
 dockerfile_switch_to_user
-docker_build_image_and_create_volume
-cat >>$DOCKERFILE <<'EOF'
+cp AppRun "$(dirname "$DOCKERFILE")"
+cp jpeg-archive.desktop "$(dirname "$DOCKERFILE")"
+cat >>"$DOCKERFILE" <<'EOF'
 WORKDIR /work
 RUN set -ex \
     && git clone https://github.com/mozilla/mozjpeg.git \
@@ -15,9 +17,10 @@ RUN set -ex \
     && cmake -G"Unix Makefiles" -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib ../mozjpeg \
     && make -j install DESTDIR=/work/AppDir
 RUN set -ex \
-    && git clone https://github.com/danielgtaylor/jpeg-archive.git \
+    && git clone https://github.com/sourcejedi/jpeg-archive.git \
     && cd jpeg-archive \
-    && make -j MOZJPEG_PREFIX=/work/AppDir/usr LIBJPEG=/work/AppDir/usr/lib/libjpeg.a \
+    && git checkout extern \
+    && make MOZJPEG_PREFIX=/work/AppDir/usr LIBJPEG=/work/AppDir/usr/lib/libjpeg.a \
     && make install PREFIX=/work/AppDir
 COPY jpeg-archive.desktop /work/AppDir/jpeg-archive.desktop
 RUN set -ex \
@@ -35,10 +38,9 @@ RUN set -ex \
     && strace ./AppRun || true
 EOF
 docker_build_image_and_create_volume
-#run_shfmt_and_shellcheck
-#$DOCKER_RUN_IT "$@"
+mkdir -p release
 if [ $# -eq 0 ]; then
-	$DOCKER_RUN_I cp jpeg-recompress-x86_64.AppImage /mnt
+	$DOCKER_RUN_I cp jpeg-recompress-x86_64.AppImage /mnt/release
 else
 	$DOCKER_RUN_I "$@"
 fi
