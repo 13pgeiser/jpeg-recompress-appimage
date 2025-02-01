@@ -11,7 +11,7 @@ cp jpeg-archive.desktop "$(dirname "$DOCKERFILE")"
 cat >>"$DOCKERFILE" <<'EOF'
 WORKDIR /work
 RUN set -ex \
-    && git clone https://github.com/mozilla/mozjpeg.git \
+    && git clone https://github.com/mozilla/mozjpeg.git --branch=v4.1.1 \
     && mkdir -p build_mozjpeg \
     && cd build_mozjpeg \
     && cmake -G"Unix Makefiles" -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib ../mozjpeg \
