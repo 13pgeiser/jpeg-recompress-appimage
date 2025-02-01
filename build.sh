@@ -11,15 +11,14 @@ cp jpeg-archive.desktop "$(dirname "$DOCKERFILE")"
 cat >>"$DOCKERFILE" <<'EOF'
 WORKDIR /work
 RUN set -ex \
-    && git clone https://github.com/mozilla/mozjpeg.git --branch=v4.1.1 \
+    && git clone https://github.com/mozilla/mozjpeg.git \
     && mkdir -p build_mozjpeg \
     && cd build_mozjpeg \
-    && cmake -G"Unix Makefiles" -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib ../mozjpeg \
+    && CFLAGS="-fPIC" cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=0 -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib ../mozjpeg \
     && make -j install DESTDIR=/work/AppDir
 RUN set -ex \
-    && git clone https://github.com/sourcejedi/jpeg-archive.git \
+    && git clone https://github.com/13pgeiser/jpeg-archive.git --branch=pag \
     && cd jpeg-archive \
-    && git checkout extern \
     && make MOZJPEG_PREFIX=/work/AppDir/usr LIBJPEG=/work/AppDir/usr/lib/libjpeg.a \
     && make install PREFIX=/work/AppDir
 COPY jpeg-archive.desktop /work/AppDir/jpeg-archive.desktop
