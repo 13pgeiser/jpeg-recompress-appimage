@@ -17,7 +17,7 @@ RUN set -ex \
     && CFLAGS="-fPIC" cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=0 -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib ../mozjpeg \
     && make -j install DESTDIR=/work/AppDir
 RUN set -ex \
-    && git clone https://github.com/13pgeiser/jpeg-archive.git --branch=pag \
+    && git clone https://github.com/danielgtaylor/jpeg-archive.git --branch=master \
     && cd jpeg-archive \
     && make MOZJPEG_PREFIX=/work/AppDir/usr LIBJPEG=/work/AppDir/usr/lib/libjpeg.a \
     && make install PREFIX=/work/AppDir
