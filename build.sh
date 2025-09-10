@@ -3,7 +3,7 @@ set -ex
 source bash-scripts/helpers.sh
 run_shfmt_and_shellcheck ./*.sh
 docker_setup "jpeg-recompress-appimage"
-dockerfile_create
+dockerfile_create bookworm
 dockerfile_appimage
 dockerfile_switch_to_user
 cp AppRun "$(dirname "$DOCKERFILE")"
